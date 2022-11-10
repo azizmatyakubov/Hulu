@@ -3,8 +3,10 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import Navbar from "../components/Navbar";
 import Header from "../components/Header";
+import Movies from '../components/Movies';
+import request from '../utils/request';
 
-export default function Home() {
+export default function Home({ movies }) {
   return (
     <>
       <Head>
@@ -16,8 +18,23 @@ export default function Home() {
       <Header />
       {/* Navbar  */}
       <Navbar />
-
       {/* Movies  */}
+      <Movies movies={movies} />
     </>
   );
+}
+
+
+export async function getServerSideProps(context) {
+  const genre = context.query.genre;
+
+  
+  const res = await fetch(`https://api.themoviedb.org/3${request[genre]?.url || request.fetchTrending.url}`);
+  const data = await res.json();
+
+  return {
+    props: {
+      movies: data.results,
+    },
+  };
 }
